@@ -6,21 +6,21 @@ from AppNerilan.forms import *
 """cliente = Cliente(nombre="Supermaren", formadepago="credito", tienedeuda=False)
 cliente.save()"""
 
-def cliente(self):
+"""def cliente(self):
     cliente=Cliente.objects.get(nombre="Megamax",formadepago="Credito", tienedeuda=False)
     #cliente.save()
     documentoDeTexto=f"--->Cliente:{cliente.nombre},Cliente{cliente.formadepago},Cliente{cliente.tienedeuda}"
-    return HttpResponse(documentoDeTexto)
+    return HttpResponse(documentoDeTexto)"""
 #def inicio(recuest):
  #   return render(recuest,"AppNerilan/inicio.html")
 def inicio(request):
     return render(request, 'AppNerilan/padre.html')
-def empleado(recuest):
-    return render(recuest,"AppNerilan/empleado.html")
-def cliente(recuest):
-    return render(recuest,"AppNerilan/cliente.html")
-def finanzas(recuest):
-    return render(recuest,"AppNerilan/finanzas.html")
+#def empleado(recuest):
+ #   return render(recuest,"AppNerilan/empleado.html")
+#def cliente(recuest):
+ #   return render(recuest,"AppNerilan/cliente.html")
+#def finanzas(recuest):
+ #   return render(recuest,"AppNerilan/finanzas.html")
 
 def empleadoFormulario(request):
       return render(request,"AppNerilan/empleadoFormulario.html")
@@ -29,38 +29,47 @@ def clienteFormulario(request):
 def finanzasFormulario(request):
       return render(request,"AppNerilan/finanzasFormulario.html")
 
-def clienteFormulario(request):
+def cliente(request):
       if request.method == 'POST':
       
-            cliente =  Cliente(request.post['nombre'],request.post['formadepago'],request.post['tienedeuda'])
- 
-            cliente.save()
+            miFormulario =  ClienteFormulario(request,POST)
+            print(miFormulario)
+            if miFormulario.is_valid:
+                 informacion=miFormulario.cleaned_data
+                 clientes=Cliente(nombre=informacion['nombre'],formadepago=informacion['formadepago'],tienedeuda=informacion['tienedeuda'])
+            clientes.save()
  
             return render(request, "AppNerilan/inicio.html")
- 
-      return render(request,"AppNerilan/clienteFormulario.html")
+      else:
+           miFormulario=ClienteFormulario()
+      return render(request,"AppNerilan/cliente.html",{"miFormulario":miFormulario})
+#(request.post['nombre'],request.post['formadepago'],request.post['tienedeuda'])
+def empleado(request):
+      if request.method == 'POST':
+            
+            miFormulario =  EmpleadoFormulario(request,POST)
+            print(miFormulario)
+            if miFormulario.is_valid:
+                  informacion=miFormulario.cleaned_data
+                  empleados=Empleado(nombre=informacion['nombre'],antiguedad=informacion['antiguedad'],email=informacion['email'])
+                  empleados.save()
+            return render(request, "AppNerilan/inicio.html")
+      else:
+            miFormulario=EmpleadoFormulario()
+      return render(request,"AppNerilan/empleado.html",{"miFormulario":miFormulario})
 
-def empleadoFormulario(request):
+def finanzas(request):
       if request.method == 'POST':
-      
-            empleado =  Empleado(request.post['nombre'],request.post['antiguedad'],request.post['email'])
- 
-            empleado.save()
- 
+            miFormulario = FinanzasFormulario(request,POST)
+            print(miFormulario)
+            if miFormulario.is_valid:
+                  informacion=miFormulario.cleaned_data
+                  finanzas=Finanzas(gastos=informacion['gastos'],antiguedad=informacion['ganancias'])
+                  finanzas.save()
             return render(request, "AppNerilan/inicio.html")
- 
-      return render(request,"AppNerilan/empleadoFormulario.html")
-
-def finanzasFormulario(request):
-      if request.method == 'POST':
-      
-            finanzas=  Finanzas(request.post['gastos'],request.post['ganancias'])
- 
-            finanzas.save()
- 
-            return render(request, "AppNerilan/inicio.html")
- 
-      return render(request,"AppNerilan/finanzasFormulario.html")
+      else:
+            miFormulario=FinanzasFormulario()
+      return render(request,"AppNerilan/finanzas.html",{"miFormulario":miFormulario})
 """
 from AppNerilan.forms import ClienteFormulario
  

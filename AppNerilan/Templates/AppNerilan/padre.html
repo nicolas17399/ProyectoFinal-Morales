@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,18 +6,28 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link href="{% static 'AppNerilan/css/styles.css' %}" rel="stylesheet" type="text/css">
+    <img src="{% static 'AppNerilan/assets/img/mondelez2.png' %}">
 </head>
 <body>
-    {% load static %}
     <nav class="navbar navbar-light bg-light static-top">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'Inicio' %}">Inicio</a>
-            <a class="navbar-brand" href="{% url 'Empleado' %}">Empleado</a>
-            <a class="navbar-brand" href="{% url 'Cliente' %}">Clientes</a>
+            <a class="navbar-brand" href="{% url 'busquedaemail' %}">Inicio</a>
+            <a class="navbar-brand" href="{% url 'empleado' %}">Empleado</a>
+            <a class="navbar-brand" href="{% url 'cliente' %}">Clientes</a>
             <a class="navbar-brand" href="{% url 'Finanzas' %}">Finanzas</a>
             <a class="btn btn-primary" href="#NADAAUN">INICIAR</a>
         </div>
     </nav>
     <h1>"Bienvenidos a la pagina de Nerilan"</h1>
+    <p>Estamos buscando el: {{email}}</p>
+    {% if empleado %}
+    <ul>
+        <il>{{empleado.nombre}}</il>
+        <il>{{empleado.email}}</il>
+    </ul>
+    {% endif %}
+    {% block contenidoQueCambia %}
+    {% endblock %}
 </body>
 </html>

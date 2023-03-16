@@ -11,7 +11,11 @@
     {% load static %}
     {% block contenidoQueCambia %}
     <h1>"Esta es la pantalla de las finanzas"</h1>
-    <p>Acá va la info de las finanzas</p>
+    <form action="/finanzas/"    method="post">{% csrf_token %}
+        <p> Gastos: <input type = "number" name="Gastos"></p>
+        <p> Ganancias: <input type = "number" name="Ganancias"></p>
+        <input type = "submit" value="Enviar">
+    </form>
     {% endblock %}
      
 </body>

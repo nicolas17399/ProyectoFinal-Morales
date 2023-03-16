@@ -8,7 +8,7 @@
 </head>
 <body>
     {% load static %}
-    <form action="{% url 'EmpleadoFormulario' %}"    method="post">{% csrf_token %}
+    <form action="{% url 'empleado' %}"    method="post">{% csrf_token %}
         <p> Nombre: <input type = "text" name="nombre"></p>
         <p> Antiguedad: <input type = "number" name="Antiguedad"></p>
         <p> Email: <input type = "email" name="Email"></p>

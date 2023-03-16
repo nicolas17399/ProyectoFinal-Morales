@@ -11,7 +11,12 @@
     {% load static %}
     {% block contenidoQueCambia %}
     <h1>"Esta es la pantalla de los empleados"</h1>
-    <p>Acá va la info de los empleados</p>
+    <form action="{% url 'empleado' %}"    method="post">{% csrf_token %}
+        <p> Nombre: <input type = "text" name="nombre"></p>
+        <p> Antiguedad: <input type = "number" name="Antiguedad"></p>
+        <p> Email: <input type = "email" name="Email"></p>
+        <input type = "submit" value="Enviar">
+     </form>
     {% endblock %}
       
 </body>
