@@ -7,6 +7,7 @@
     <title>Formulario - Agregar Curso</title>
 </head>
 <body>
+    {% load static %}
     <form action="/finanzasFormulario/"    method="post">{% csrf_token %}
         <p> Gastos: <input type = "number" name="Gastos"></p>
         <p> Ganancias: <input type = "number" name="Ganancias"></p>

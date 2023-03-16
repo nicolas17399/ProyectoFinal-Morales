@@ -7,13 +7,13 @@
     <title>Document</title>
 </head>
 <body>
+    {% load static %}
     <nav class="navbar navbar-light bg-light static-top">
         <div class="container">
             <a class="navbar-brand" href="{% url 'Inicio' %}">Inicio</a>
-            <a class="navbar-brand" href="{% url 'Profesores' %}">Profesores</a>
-            <a class="navbar-brand" href="{% url 'Cursos' %}">Cursos</a>
-            <a class="navbar-brand" href="{% url 'Estudiantes' %}">Estudiantes</a>
-            <a class="navbar-brand" href="{% url 'Entregables' %}">Entregables</a>
+            <a class="navbar-brand" href="{% url 'Empleado' %}">Empleado</a>
+            <a class="navbar-brand" href="{% url 'Cliente' %}">Clientes</a>
+            <a class="navbar-brand" href="{% url 'Finanzas' %}">Finanzas</a>
             <a class="btn btn-primary" href="#NADAAUN">INICIAR</a>
         </div>
     </nav>

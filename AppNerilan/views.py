@@ -11,8 +11,10 @@ def cliente(self):
     #cliente.save()
     documentoDeTexto=f"--->Cliente:{cliente.nombre},Cliente{cliente.formadepago},Cliente{cliente.tienedeuda}"
     return HttpResponse(documentoDeTexto)
-def inicio(recuest):
-    return render(recuest,"AppNerilan/inicio.html")
+#def inicio(recuest):
+ #   return render(recuest,"AppNerilan/inicio.html")
+def inicio(request):
+    return render(request, 'AppNerilan/padre.html')
 def empleado(recuest):
     return render(recuest,"AppNerilan/empleado.html")
 def cliente(recuest):
@@ -82,7 +84,7 @@ def clienteFormulario(request):
 def busquedaemail(recuest):
     return render(recuest, "AppNerilan/busquedaemail.html")
 def buscar(recuest):
-    if recuest.GET['email']:
+    if email in recuest.GET['email']:
         #respuesta=f"Estoy buscando el email:{recuest.GET['email']}"
         email=recuest.GET['email']
         emple=Empleado.objects.filters(email__icontains=email)
@@ -90,3 +92,9 @@ def buscar(recuest):
     else:
          respuesta="No enviaste datos"
          return HttpResponse(respuesta)
+    
+
+
+
+
+

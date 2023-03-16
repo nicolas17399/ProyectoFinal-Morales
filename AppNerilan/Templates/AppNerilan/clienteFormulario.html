@@ -7,6 +7,7 @@
     <title>Document</title>
 </head>
 <body>
+    {% load static %}
     <form action="/clienteFormulario/" method="POST">{% csrf_token %}
         <p>Nombre: <input type="text" name="nombre"></p>
         <p>formadepago: <input type="text" name="formadepago"></p>
