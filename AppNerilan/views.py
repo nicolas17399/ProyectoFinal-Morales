@@ -13,21 +13,21 @@ cliente.save()"""
     return HttpResponse(documentoDeTexto)"""
 #def inicio(recuest):
  #   return render(recuest,"AppNerilan/inicio.html")
-def inicio(request):
+"""def inicio(request):
     return render(request, 'AppNerilan/padre.html')
-#def empleado(recuest):
- #   return render(recuest,"AppNerilan/empleado.html")
-#def cliente(recuest):
- #   return render(recuest,"AppNerilan/cliente.html")
-#def finanzas(recuest):
- #   return render(recuest,"AppNerilan/finanzas.html")
-
+def empleado(recuest):
+   return render(recuest,"AppNerilan/empleado.html")
+def cliente(recuest):
+   return render(recuest,"AppNerilan/cliente.html")
+def finanzas(recuest):
+   return render(recuest,"AppNerilan/finanzas.html")
+"""
 def empleadoFormulario(request):
-      return render(request,"AppNerilan/empleadoFormulario.html")
+      return render(request,"AppNerilan/empleado.html")
 def clienteFormulario(request):
-      return render(request,"AppNerilan/clienteFormulario.html")
+      return render(request,"AppNerilan/cliente.html")
 def finanzasFormulario(request):
-      return render(request,"AppNerilan/finanzasFormulario.html")
+      return render(request,"AppNerilan/finanzas.html")
 
 def cliente(request):
       if request.method == 'POST':
@@ -39,21 +39,19 @@ def cliente(request):
                  clientes=Cliente(nombre=informacion['nombre'],formadepago=informacion['formadepago'],tienedeuda=informacion['tienedeuda'])
             clientes.save()
  
-            return render(request, "AppNerilan/inicio.html")
+            return render(request, "AppNerilan/padre.html")
       else:
            miFormulario=ClienteFormulario()
       return render(request,"AppNerilan/cliente.html",{"miFormulario":miFormulario})
-#(request.post['nombre'],request.post['formadepago'],request.post['tienedeuda'])
 def empleado(request):
       if request.method == 'POST':
-            
             miFormulario =  EmpleadoFormulario(request,POST)
             print(miFormulario)
             if miFormulario.is_valid:
                   informacion=miFormulario.cleaned_data
                   empleados=Empleado(nombre=informacion['nombre'],antiguedad=informacion['antiguedad'],email=informacion['email'])
                   empleados.save()
-            return render(request, "AppNerilan/inicio.html")
+            return render(request, "AppNerilan/padre.html")
       else:
             miFormulario=EmpleadoFormulario()
       return render(request,"AppNerilan/empleado.html",{"miFormulario":miFormulario})
@@ -66,7 +64,7 @@ def finanzas(request):
                   informacion=miFormulario.cleaned_data
                   finanzas=Finanzas(gastos=informacion['gastos'],antiguedad=informacion['ganancias'])
                   finanzas.save()
-            return render(request, "AppNerilan/inicio.html")
+            return render(request, "AppNerilan/padre.html")
       else:
             miFormulario=FinanzasFormulario()
       return render(request,"AppNerilan/finanzas.html",{"miFormulario":miFormulario})
@@ -93,14 +91,14 @@ def clienteFormulario(request):
 def busquedaemail(recuest):
     return render(recuest, "AppNerilan/busquedaemail.html")
 def buscar(recuest):
-    if email in recuest.GET['email']:
+    if recuest.GET['email']:
         #respuesta=f"Estoy buscando el email:{recuest.GET['email']}"
         email=recuest.GET['email']
-        emple=Empleado.objects.filters(email__icontains=email)
-        return render(recuest,"AppNerilan/ResultadosPorBusqueda.html",{"empleado":emple, "email":email})
+        empleado=Empleado.objects.filter(email__icontains=email)
+        return render(recuest,"AppNerilan/padre.html",{"empleado":empleado, "email":email})
     else:
          respuesta="No enviaste datos"
-         return HttpResponse(respuesta)
+         return render(recuest,"AppNerilan/padre,html",{"respuesta":respuesta})
     
 
 

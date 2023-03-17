@@ -10,13 +10,15 @@
     {% extends "AppNerilan/padre.html" %}
     {% load static %}
     {% block contenidoQueCambia %}
-    <h1>"Esta es la pantalla de los clientes"</h1>
-    <form action="/cliente/" method="POST">{% csrf_token %}
-        <p>Nombre: <input type="text" name="nombre"></p>
-        <p>formadepago: <input type="text" name="formadepago"></p>
-        <p>tienedeuda: <input type="boolean" name="tienedeuda"></p>
-        <input type="submit" value="Enviar">
-    </form>
+        {% if miFormulario.errors %}
+        <p style="color: red;"> Estan mal los datos, revisar</p>
+        {% endif %}
+        <form action="" method="POST">{% csrf_token %}
+            <table>
+                {{ miFormulario.as_table}}
+            </table>
+            <input type="submit" value="Enviar">
+        </form>
     {% endblock %}
        
 </body>
