@@ -8,7 +8,7 @@ class Empleado(models.Model):
 
 class Cliente(models.Model):
     nombre=models.CharField(max_length=30)
-    formadepago=models.CharField(max_length=30)
+    metododepago=models.CharField(max_length=30)
     tienedeuda=models.BooleanField()
 
 class Finanzas(models.Model):

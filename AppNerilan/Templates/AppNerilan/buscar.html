@@ -7,23 +7,22 @@
     <title>Document</title>
 </head>
 <body>
-    
     {% extends "AppNerilan/padre.html" %}
     {% load static %}
     {% block contenidoQueCambia %}
-   
-    <form action="/AppNerilan/buscar" method="POST">{% csrf_token %}
-        <input type="email" name="email" id="email">
-        <input type="submit" value="Buscar">
-    </form>
-    <p>Estamos buscando el: {{email}}</p>
+        <form method="GET" action="{% url 'buscar' %}">
+            <input type="text" name="email">
+            <button type="submit">Buscar</button>
+        </form>
+        <p>Estamos buscando el: {{email}}</p>
         {% if empleado %}
         <ul>
-            <il>{{empleado.nombre}}</il>
-            <il>{{empleado.email}}</il>
+        {% for Empleado in empleado %}
+            <li>{{Empleado.nombre}}</li>
+            <li>{{Empleado.email}}</li>
+        {%endfor%}
         </ul>
-        {% endif %} 
+        {%endif%}
     {% endblock %}
-       
 </body>
 </html>

@@ -1,5 +1,7 @@
 from django import forms
- 
+from AppNerilan.models import *
+
+
 class ClienteFormulario(forms.Form):
     nombre = forms.CharField()
     metododepago = forms.CharField()

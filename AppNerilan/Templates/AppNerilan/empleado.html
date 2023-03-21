@@ -10,15 +10,12 @@
     {% extends "AppNerilan/padre.html" %}
     {% load static %}
     {% block contenidoQueCambia %}
-    {% extends "AppNerilan/padre.html" %}
-    {% load static %}
-    {% block contenidoQueCambia %}
         {% if miFormulario.errors %}
         <p style="color: red;"> Estan mal los datos, revisar</p>
         {% endif %}
-        <form action="empleado" method="POST">{% csrf_token %}
+        <form action="" method="POST">{% csrf_token %}
             <table>
-                {{ miFormulario.as_table}}
+                {{ miFormulario2.as_table}}
             </table>
             <input type="submit" value="Enviar">
         </form>
