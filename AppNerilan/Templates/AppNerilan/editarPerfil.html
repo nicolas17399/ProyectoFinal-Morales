@@ -8,17 +8,31 @@
 </head>
 <body>
     {% extends "AppNerilan/padre.html" %}
+
     {% load static %}
+
     {% block contenidoQueCambia %}
-        {% if miFormulario.errors %}
-        <p style="color: red;"> Estan mal los datos, revisar</p>
-        {% endif %}
+
+        <!--Aquí va lo que cambia, y lo asociado a está vista :) -->
+        <h1>Formulario - Editar Perfil</h1>
+        <h1>De {{usuario}}</h1>
+        
+
         <form action="" method="POST">{% csrf_token %}
+
+            <!-- Acá está la magia de Django-->
+            
             <table>
-                
-            </table>{{ miFormulario1.as_table}}
-        </form>
-    {% endblock %}
-       
+
+                {{ miFormulario5.as_p }}
+
+            </table>
+
+            <input type="submit", value="Enviar">
+
+        </form>  
+
+{% endblock %}
+
 </body>
 </html>

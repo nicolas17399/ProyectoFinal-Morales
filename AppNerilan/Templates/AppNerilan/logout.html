@@ -10,15 +10,9 @@
     {% extends "AppNerilan/padre.html" %}
     {% load static %}
     {% block contenidoQueCambia %}
-        {% if miFormulario.errors %}
-        <p style="color: red;"> Estan mal los datos, revisar</p>
-        {% endif %}
-        <form action="" method="POST">{% csrf_token %}
-            <table>
-                
-            </table>{{ miFormulario1.as_table}}
-        </form>
+    <h1>Te has deslogueado...</h1>
+    <a href="{% url 'Login' %}">Iniciar sesión</a>
     {% endblock %}
-       
+
 </body>
 </html>

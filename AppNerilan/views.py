@@ -1,32 +1,35 @@
-from django.shortcuts import render
+from django.shortcuts import *
 from AppNerilan.models import *
 from django.http import HttpResponse, HttpResponseRedirect
 from AppNerilan.forms import *
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User,Group
+from django.utils import timezone
 
-"""cliente = Cliente(nombre="Supermaren", formadepago="credito", tienedeuda=False)
-cliente.save()"""
 
-"""def cliente(self):
-    cliente=Cliente.objects.get(nombre="Megamax",formadepago="Credito", tienedeuda=False)
-    #cliente.save()
-    documentoDeTexto=f"--->Cliente:{cliente.nombre},Cliente{cliente.formadepago},Cliente{cliente.tienedeuda}"
-    return HttpResponse(documentoDeTexto)"""
-def inicio(recuest):
-    return render(recuest,"AppNerilan/inicio.html")
+
+#from django.contrib.auth.mixins import LoginRequiredMixin
+
+#class ClaseQueNecesitaLogin (LoginRequiredMixin):
+ #     pass
+@login_required
+def inicio(request):
+    avatares=Avatar.objects.filter(user=request.user.id)
+    print(avatares[0].imagen.url)
+    return render(request,"AppNerilan/inicio.html",{"url":avatares[0].imagen.url})
 def padre(request):
     return render(request, 'AppNerilan/padre.html')
-def empleado(recuest):
-   return render(recuest,"AppNerilan/empleado.html")
-def cliente(recuest):
-   return render(recuest,"AppNerilan/cliente.html")
-def finanzas(recuest):
-   return render(recuest,"AppNerilan/finanzas.html")
-def empleadoFormulario(request):
-      return render(request,"AppNerilan/empleado.html")
-def clienteFormulario(request):
-      return render(request,"AppNerilan/cliente.html")
-def finanzasFormulario(request):
-      return render(request,"AppNerilan/finanzas.html")
+def empleado(request):
+   return render(request,"AppNerilan/empleado.html")
+def cliente(request):
+   return render(request,"AppNerilan/cliente.html")
+def finanzas(request):
+   return render(request,"AppNerilan/finanzas.html")
+def no_hay_datos(request):
+    return render(request, "AppNerilan/nohaydatos.html")
 
 def cliente(request):
       if request.method == 'POST':
@@ -42,19 +45,70 @@ def cliente(request):
       else:
            miFormulario1=ClienteFormulario()
       return render(request,"AppNerilan/cliente.html",{"miFormulario1":miFormulario1})
+
+def lista_articulos(request):
+    articulos = Articulo.objects.all()
+    return render(request, 'AppNerilan/lista_articulos.html', {'articulos': articulos})
+
+def crear_eleccion(request, articulo_id):
+    articulo = Articulo.objects.get(pk=articulo_id)
+    cantidad = request.POST['cantidad']
+    fecha_eleccion = timezone.now()
+    eleccion = Eleccion(articulo=articulo, cantidad=cantidad, fecha_eleccion=fecha_eleccion)
+    eleccion.save()
+    return redirect('articulos')
+
 def empleado(request):
       if request.method == 'POST':
-            miFormulario2 =  EmpleadoFormulario(request.POST)
+            miFormulario2 =  EmpleadoFormulario(request.POST, request.FILES)
             print(miFormulario2)
             if miFormulario2.is_valid():
                   informacion=miFormulario2.cleaned_data
-                  empleados=Empleado(nombre=informacion['nombre'],antiguedad=informacion['antiguedad'],email=informacion['email'])
+                  empleados=Empleado(user=request.user,
+                                     nombre=informacion['nombre'],
+                                     antiguedad=informacion['antiguedad'],
+                                     email=informacion['email'],
+                                     recibo=request.FILES['recibo'])
                   empleados.save()
             return render(request, "AppNerilan/padre.html")
       else:
             miFormulario2=EmpleadoFormulario()
       return render(request,"AppNerilan/empleado.html",{"miFormulario2":miFormulario2})
 
+@login_required
+def leerempleado(request):
+    if request.user.is_staff:
+        # Si el usuario es un administrador, obtener todos los empleados
+        empleados = Empleado.objects.all()
+    else:
+        # Si el usuario no es un administrador, obtener solo su propio empleado
+        empleados = Empleado.objects.filter(user=request.user).first()
+        
+    if empleados:
+        # Si se encontró al menos un empleado, renderizar la plantilla "empleado.html"
+        contexto = {"empleados": empleados}
+        return render(request, "AppNerilan/empleado.html", contexto)
+    else:
+        # Si no se encontraron empleados, redirigir a la página "no_hay_datos"
+        return redirect("no_hay_datos")
+        
+"""@login_required
+def leerempleado(request):
+    if request.user.is_staff:
+        # Si el usuario es un administrador, obtener todos los empleados
+        empleado = Empleado.objects.all()
+    else:
+        # Si el usuario no es un administrador, buscar su empleado específico
+        empleado = Empleado.objects.filter(user=request.user).first()
+
+        # Si no se encontró un empleado específico, redirigir a la página "no_hay_datos"
+        if not empleado:
+            return redirect("no_hay_datos")
+        
+    # Renderizar la plantilla "empleado.html" con los empleados encontrados
+    contexto = {"empleados": empleado}
+    return render(request, "AppNerilan/empleado.html", contexto)
+"""
 def finanzas(request):
       if request.method == 'POST':
             miFormulario3 = FinanzasFormulario(request.POST)
@@ -68,9 +122,22 @@ def finanzas(request):
             miFormulario3=FinanzasFormulario()
       return render(request,"AppNerilan/finanzas.html",{"miFormulario3":miFormulario3})
 
+def agregarAvatar(request):
+      if request.method == 'POST':
+      
+            miFormulario4 =  AvatarFormulario(request.POST,request.FILES)
+            print(miFormulario4)
+            if miFormulario4.is_valid():
+                 u=User.objects.get(username=request.user)
+                 avatar=Avatar(user=u, imagen=miFormulario4.cleaned_data['imagen'])
+            avatar.save()
+ 
+            return render(request, "AppNerilan/inicio.html")
+      else:
+           miFormulario4=AvatarFormulario()
+      return render(request,"AppNerilan/agregarAvatar.html",{"miFormulario4":miFormulario4})
 
-#def busquedaemail(recuest):
- #  return render(recuest, "AppNerilan/padre.html")
+
 def buscar(recuest):
     if 'email' in recuest.GET:
         #respuesta=f"Estoy buscando el email:{recuest.GET['email']}"
@@ -82,21 +149,142 @@ def buscar(recuest):
          respuesta="No enviaste datos"
          return render(recuest,"AppNerilan/buscar.html",{"respuesta":respuesta})
     
+def login_request(request):
 
-""" <!-- <form method="post" action="{% url 'buscar/' %}">
-            {% csrf_token %}
-            <input type="text" name="busqueda">
-            <button type="submit">Buscar</button>
-        </form>-->
-      
-        <!--<form action="/AppNerilan/buscar" method="POST">{% csrf_token %}
-            <input type="email" name="email" id="email">
-            <input type="submit" value="buscar">
-        </form>
-            -->"""
-    
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data = request.POST)
+
+        if form.is_valid():  # Si pasó la validación de Django
+
+            usuario = form.cleaned_data.get('username')
+            contraseña = form.cleaned_data.get('password')
+
+            user = authenticate(username= usuario, password=contraseña)
+
+            if user is not None:
+                login(request, user)
+
+                return render(request, "AppNerilan/inicio.html", {"mensaje":f"Bienvenido {usuario}"})
+            else:
+                return render(request, "AppNerilan/inicio.html", {"mensaje":"Datos incorrectos"})
+           
+        else:
+
+            return render(request, "AppNerilan/inicio.html", {"mensaje":"Formulario erroneo"})
+
+    form = AuthenticationForm()
+
+    return render(request, "AppNerilan/login.html", {"form": form})
+
+def logout_view(request):
+    # código de logout...
+    return redirect('Login')
+"""
+# Vista de registro
+def register(request):
+
+      if request.method == 'POST':
+
+            #form = UserCreationForm(request.POST)
+            form = UserRegisterForm(request.POST)
+            if form.is_valid():
+
+                  username = form.cleaned_data['username']
+                  form.save()
+                  return render(request,"AppNerilan/inicio.html" ,  {"mensaje":"Usuario Creado :)"})
+
+      else:
+            #form = UserCreationForm()       
+            form = UserRegisterForm()     
+
+      return render(request,"AppNerilan/register.html" ,  {"form":form})
+"""
+def register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            # Crear el usuario
+            user = User.objects.create_user(
+                form.cleaned_data['username'],
+                form.cleaned_data['email'],
+                form.cleaned_data['password1'],
+                **{
+                    'last_name': form.cleaned_data['last_name'],
+                    'first_name': form.cleaned_data['first_name']
+                }
+            )
+            # Agregar al grupo correspondiente
+            if form.cleaned_data['user_type'] == 'client':
+                group = Group.objects.get(name='Cliente')
+                group.user_set.add(user)
+            elif form.cleaned_data['user_type'] == 'employee':
+                group = Group.objects.get(name='Empleado')
+                group.user_set.add(user)
+
+            return redirect('Login')
+    else:
+        form = UserRegisterForm()
+
+    return render(request, 'AppNerilan/register.html', {'form': form})
 
 
+@login_required
+def editarPerfil(request):
+    usuario = request.user
+    if request.method == 'POST':
+        miFormulario5 = UserEditForm(request.POST)
+        if miFormulario5.is_valid():
+            informacion = miFormulario5.cleaned_data
 
 
+            usuario.email = informacion['email']
+            usuario.first_name = informacion['first_name']
+            usuario.last_name = informacion['last_name']
+            if informacion['password1'] == informacion['password2']:
+                usuario.password = make_password(informacion['password1'])
+                usuario.save()
+            else:
+                return render(request, 'inicio.html', {'mensaje':'Contrasena incorrecta'})
 
+
+            return render(request, 'inicio.html')
+    else:
+        miFormulario5 = UserEditForm(initial={'email':usuario.email})
+
+
+    return render(request, "AppNerilan/editarPerfil.html", {"miFormulario5":miFormulario5, "usuario":usuario})
+
+
+"""
+<!--{% if request.user.has_perm('AppNerilan.ver_opcion1') %}
+                <li><a href="{% url 'vista_opcion1' %}">Opción 1</a></li>
+            {% endif %}
+            {% if request.user.has_perm('AppNerilan.ver_opcion2') %}
+                <li><a href="{% url 'vista_opcion2' %}">Opción 2</a></li>
+            {% endif %}-->
+@login_required
+def vista_general(request):
+    return render(request, 'vista_general.html')
+
+@login_required
+@permission_required('AppNerilan.ver_opcion1', raise_exception=True)
+@user_passes_test(lambda u: u.groups.filter(name='grupo1').exists())
+def vista_opcion1(request):
+    return render(request, 'vista_opcion1.html')
+
+@login_required
+@permission_required('AppNerilan.ver_opcion2', raise_exception=True)
+@user_passes_test(lambda u: u.groups.filter(name='grupo2').exists())
+def vista_opcion2(request):
+    return render(request, 'vista_opcion2.html')
+"""
+
+"""{% if miFormulario.errors %}
+        <p style="color: red;"> Estan mal los datos, revisar</p>
+        {% endif %}
+        <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+            <table>
+                {{ miFormulario2.as_table}}
+            </table>
+            <input type="submit" value="Enviar">
+        </form>"""

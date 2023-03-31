@@ -7,11 +7,15 @@
     <title>Document</title>
 </head>
 <body>
+    {% extends "AppNerilan/padre.html" %}
     {% load static %}
-    <form action="/AppNerilan/buscar" method="POST">{% csrf_token %}
-        <input type="email" name="email" id="email">
-        <input type="submit" value="Buscar">
+    {% block contenidoQueCambia %}
+    <form action="" method="POST"> {% csrf_token %}
+            {{ form.as_p }}
+        <button type="submit">Inciar sesion</button>
+        <a href="{% url 'Register' %}">Registrarme</a>
     </form>
     
+    {% endblock %}
 </body>
 </html>

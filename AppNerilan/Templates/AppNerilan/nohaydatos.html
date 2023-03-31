@@ -9,16 +9,8 @@
 <body>
     {% extends "AppNerilan/padre.html" %}
     {% load static %}
-    {% block contenidoQueCambia %}
-        {% if miFormulario.errors %}
-        <p style="color: red;"> Estan mal los datos, revisar</p>
-        {% endif %}
-        <form action="" method="POST">{% csrf_token %}
-            <table>
-                
-            </table>{{ miFormulario1.as_table}}
-        </form>
+    <p style="color: red;"> No hay datos registrados con su usuario</p>
     {% endblock %}
-       
+      
 </body>
 </html>

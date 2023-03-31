@@ -10,16 +10,10 @@
     {% extends "AppNerilan/padre.html" %}
     {% load static %}
     {% block contenidoQueCambia %}
-        {% if miFormulario.errors %}
-        <p style="color: red;"> Estan mal los datos, revisar</p>
-        {% endif %}
-        <form action="" method="POST">{% csrf_token %}
-            <table>
-                {{ miFormulario2.as_table}}
-            </table>
-            <input type="submit" value="Enviar">
-        </form>
-    
+    <h1>"Seccion de Empleados"</h1>
+    {% for e in empleados %}
+    <li>{{e.nombre}}</li>
+    {% endfor %}
     {% endblock %}
       
 </body>

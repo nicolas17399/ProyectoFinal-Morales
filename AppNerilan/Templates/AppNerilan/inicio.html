@@ -11,18 +11,10 @@
     {% extends "AppNerilan/padre.html" %}
     {% load static %}
     {% block contenidoQueCambia %}
-   
-    <form action="/AppNerilan/buscar" method="POST">{% csrf_token %}
-        <input type="email" name="email" id="email">
-        <input type="submit" value="Buscar">
-    </form>
-    <p>Estamos buscando el: {{email}}</p>
-        {% if empleado %}
-        <ul>
-            <il>{{empleado.nombre}}</il>
-            <il>{{empleado.email}}</il>
-        </ul>
-        {% endif %} 
+        <div class="text-center">
+            <img height="60px" src="{{url}}">
+            <h3>Que bueno verte {{user.username}}</h3>
+        </div>
     {% endblock %}
        
 </body>
