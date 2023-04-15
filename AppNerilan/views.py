@@ -156,7 +156,7 @@ def empleado(request):
         if empleado:
             empleados = [empleado]
         else:
-            return redirect("no_hay_datos")
+            return redirect("nohaydatos")
 
     contexto = {"empleados": empleados}
     return render(request, "AppNerilan/empleado.html", contexto)
