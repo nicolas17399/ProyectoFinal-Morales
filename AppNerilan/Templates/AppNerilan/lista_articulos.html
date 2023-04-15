@@ -17,12 +17,23 @@
     {% for articulo in articulos %}
         <div class="articulo">
             <h2>{{ articulo.nombre }}</h2>
-            <img src="{{ MEDIA_URL }}" alt="{{ articulo.nombre }}">
+            <img height="80px" src="{{ articulo.imagen.url }}" alt="{{ articulo.nombre }}">
             <p>{{ articulo.descripcion }}</p>
-            <p>Precio: {{ articulo.precio }}</p>
+            <p>Precio: ${{ articulo.precio }}</p>
+            <form method="POST" action="{% url 'crear_eleccion' articulo.id %}">
+                {% csrf_token %}
+                <label for="cantidad">Cantidad:</label>
+                <input type="number" name="cantidad" id="cantidad" value="1" min="1" required>
+                <button type="submit">Agregar al carrito</button>
         </div>
     {% endfor %}
     </ul>
+        <br>
+        <label for="comentario">Comentario:</label>
+        <textarea name="comentario" id="comentario" rows="3"></textarea>
+        <br>    
+        <input type="submit" value="Guardar elección">
+    </form>
     {% else %}
     <p>No hay artículos disponibles</p>
     {% endif %}

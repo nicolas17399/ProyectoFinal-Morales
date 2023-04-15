@@ -9,7 +9,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User,Group
 from django.utils import timezone
 
-
+default_value = timezone.now
 
 #from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -30,6 +30,8 @@ def finanzas(request):
    return render(request,"AppNerilan/finanzas.html")
 def no_hay_datos(request):
     return render(request, "AppNerilan/nohaydatos.html")
+def acercademi(request):
+    return render(request, "AppNerilan/acercademi.html")
 
 def cliente(request):
       if request.method == 'POST':
@@ -38,7 +40,7 @@ def cliente(request):
             print(miFormulario1)
             if miFormulario1.is_valid():
                  informacion=miFormulario1.cleaned_data
-                 clientes=Cliente(nombre=informacion['nombre'], metododepago=informacion['metododepago'] , tienedeuda=informacion['tienedeuda'])
+                 clientes=Cliente(cliente=request.user, metododepago=informacion['metododepago'] , tienedeuda=informacion['tienedeuda'])
             clientes.save()
  
             return render(request, "AppNerilan/padre.html")
@@ -50,15 +52,65 @@ def lista_articulos(request):
     articulos = Articulo.objects.all()
     return render(request, 'AppNerilan/lista_articulos.html', {'articulos': articulos})
 
+@login_required
 def crear_eleccion(request, articulo_id):
-    articulo = Articulo.objects.get(pk=articulo_id)
-    cantidad = request.POST['cantidad']
-    fecha_eleccion = timezone.now()
-    eleccion = Eleccion(articulo=articulo, cantidad=cantidad, fecha_eleccion=fecha_eleccion)
-    eleccion.save()
-    return redirect('articulos')
+    articulo = get_object_or_404(Articulo, pk=articulo_id)
+    cliente = request.user.cliente
+    if cliente is None:
+        # El usuario no tiene un cliente asociado, redirigir a una página de error o crear un cliente nuevo
+        return redirect('nohaydatos')
+    if request.method == 'POST':
+        cantidad = request.POST['cantidad']
+        comentario = request.POST['comentario']
+        fecha_eleccion = timezone.now()
+        eleccion = Eleccion(cliente=cliente, articulo=articulo, cantidad=cantidad, comentario=comentario, fecha_eleccion=fecha_eleccion)
+        eleccion.save()
+        return redirect('articulos')
+    else:
+        return render(request, 'AppNerilan/elegir_cantidad.html', {'articulo': articulo})
+@login_required
+def editar_eleccion(request, eleccion_id):
+    eleccion = get_object_or_404(Eleccion, pk=eleccion_id)
+    if request.method == 'POST':
+        comentario = request.POST['comentario']
+        eleccion.comentario = comentario
+        eleccion.save()
+        return redirect('pedidos_cliente')
+    else:
+        return render(request, 'AppNerilan/editar_eleccion.html', {'eleccion': eleccion})
 
-def empleado(request):
+def marcar_como_terminado(request, eleccion_id):
+    eleccion = get_object_or_404(Eleccion, pk=eleccion_id)
+    eleccion.terminado = True
+    eleccion.save()
+    return redirect('pedidos_admin')
+"""
+#@login_required
+#def empleado(request):
+    if request.method == 'POST':
+        miFormulario2 =  EmpleadoFormulario(request.POST, request.FILES)
+        if miFormulario2.is_valid():
+            informacion = miFormulario2.cleaned_data
+            empleados = Empleado(user=request.user,
+                                 nombre=informacion['nombre'],
+                                 antiguedadMeses=informacion['antiguedadMeses'],
+                                 email=informacion['email'],
+                                 recibo=request.FILES['recibo'])
+            empleados.save()
+        return redirect('empleado')
+    else:
+        if request.user.is_staff:
+            # Si el usuario es un administrador, obtener todos los empleados
+            empleados = Empleado.objects.all()
+        else:
+            # Si el usuario no es un administrador, obtener solo su propio empleado
+            empleados = Empleado.objects.filter(userid=request.user).first()
+        miFormulario2 = EmpleadoFormulario()
+        contexto = {"miFormulario2": miFormulario2, "empleados": empleados}
+        return render(request, "AppNerilan/empleado.html", contexto)
+
+
+#def empleado(request):
       if request.method == 'POST':
             miFormulario2 =  EmpleadoFormulario(request.POST, request.FILES)
             print(miFormulario2)
@@ -66,32 +118,65 @@ def empleado(request):
                   informacion=miFormulario2.cleaned_data
                   empleados=Empleado(user=request.user,
                                      nombre=informacion['nombre'],
-                                     antiguedad=informacion['antiguedad'],
+                                     antiguedadMeses=informacion['antiguedad'],
                                      email=informacion['email'],
                                      recibo=request.FILES['recibo'])
                   empleados.save()
-            return render(request, "AppNerilan/padre.html")
+            return render(request, "leerempleado")
       else:
             miFormulario2=EmpleadoFormulario()
       return render(request,"AppNerilan/empleado.html",{"miFormulario2":miFormulario2})
 
-@login_required
-def leerempleado(request):
+
+#def leerempleado(request):
     if request.user.is_staff:
         # Si el usuario es un administrador, obtener todos los empleados
         empleados = Empleado.objects.all()
-    else:
-        # Si el usuario no es un administrador, obtener solo su propio empleado
-        empleados = Empleado.objects.filter(user=request.user).first()
-        
-    if empleados:
-        # Si se encontró al menos un empleado, renderizar la plantilla "empleado.html"
         contexto = {"empleados": empleados}
         return render(request, "AppNerilan/empleado.html", contexto)
     else:
-        # Si no se encontraron empleados, redirigir a la página "no_hay_datos"
-        return redirect("no_hay_datos")
-        
+        # Si el usuario no es un administrador, obtener solo su propio empleado
+        empleado = Empleado.objects.filter(user_id=request.user.id).first()
+        if empleado:
+            # Si se encontró al menos un empleado, renderizar la plantilla "empleado.html"
+            contexto = {"empleados": [empleado]}
+            return render(request, "AppNerilan/empleado.html", contexto)
+        else:
+            # Si no se encontraron empleados, redirigir a la página "no_hay_datos"
+            return redirect("no_hay_datos")
+ """
+@login_required
+def empleado(request):
+    # Si el usuario es un administrador, obtener todos los empleados
+    if request.user.is_staff:
+        empleados = Empleado.objects.all()
+    # Si el usuario no es un administrador, obtener solo su propio empleado
+    else:
+        empleado = Empleado.objects.filter(user=request.user).first()
+        if empleado:
+            empleados = [empleado]
+        else:
+            return redirect("no_hay_datos")
+
+    contexto = {"empleados": empleados}
+    return render(request, "AppNerilan/empleado.html", contexto)
+@login_required
+def subirnuevorecibo(request):
+    if request.method == 'POST':
+        miFormulario2 = EmpleadoFormulario(request.POST, request.FILES)
+        if miFormulario2.is_valid():
+            informacion = miFormulario2.cleaned_data
+            empleados = Empleado(user=request.user,
+                                nombre=informacion['nombre'],
+                                antiguedadMeses=informacion['antiguedad'],
+                                email=informacion['email'],
+                                recibo=request.FILES['recibo'])
+            empleados.save()
+            return redirect('leerempleado')
+    else:
+        miFormulario2 = EmpleadoFormulario()
+    return render(request, "AppNerilan/subirnuevorecibo.html", {"miFormulario2": miFormulario2})
+              
 """@login_required
 def leerempleado(request):
     if request.user.is_staff:

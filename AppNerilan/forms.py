@@ -9,7 +9,6 @@ class ClienteFormulario(forms.Form):
     tienedeuda=forms.BooleanField()
 
 class EmpleadoFormulario(forms.Form):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     nombre = forms.CharField()
     antiguedadMeses = forms.IntegerField()
     email=forms.EmailField()

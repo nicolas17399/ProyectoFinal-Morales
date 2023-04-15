@@ -17,4 +17,8 @@ urlpatterns = [
     path('agregarAvatar', views.agregarAvatar,name="AgregarAvatar"),
     path("nohaydatos/",views.no_hay_datos, name="nohaydatos"),
     path('lista_articulos/', views.lista_articulos, name='lista_articulos'),
+    path("editar_eleccion/",views.editar_eleccion, name="editar_eleccion"),
+    path('elegir_cantidad/<int:articulo_id>/', views.crear_eleccion, name='crear_eleccion'),
+    path("subirnuevorecibo/",views.subirnuevorecibo, name="subirnuevorecibo"),
+    path("acercademi/",views.acercademi,name="acercademi")
 ]

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends "AppNerilan/padre.html" %}
+    {% load static %}
+    {% block contenidoQueCambia %}
+    <h1>"Aqui se pueden subir nuevos recibos para los empleados"</h1>
+    {% if miFormulario2.errors %}
+    <p style="color: red;"> Estan mal los datos, revisar</p>
+    {% endif %}
+        <form action="" method="POST">{% csrf_token %}
+            <table>
+                {{ miFormulario2.as_table}}
+            </table>
+            <input type="submit" value="Enviar">
+        </form>
+    {% endblock %}
+</body>
+</html>

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Empleado(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     nombre=models.CharField(max_length=30)
     antiguedadMeses=models.IntegerField()
     email=models.EmailField()
@@ -12,12 +13,13 @@ class Empleado(models.Model):
         return f"Nombre: {self.nombre} - Antiguedad en meses {self.antiguedadMeses} - E-Mail {self.email} - Recibo {self.recibo}"
 
 class Cliente(models.Model):
-    nombre=models.CharField(max_length=30)
+    cliente = models.OneToOneField(User, on_delete=models.CASCADE)
     metododepago=models.CharField(max_length=30)
     tienedeuda=models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Nombre: {self.nombre} - Metododepago {self.metododepago} - Tienedeuda {self.tienedeuda}"
+        return f"Nombre: {self.cliente} - Metododepago {self.metododepago} - Tienedeuda {self.tienedeuda}"
+
 
 class Articulo(models.Model):
     nombre = models.CharField(max_length=50)
@@ -32,8 +34,12 @@ class Eleccion(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     articulo = models.ForeignKey(Articulo, on_delete=models.CASCADE)
     cantidad = models.IntegerField()
-    fecha_eleccion=models.DateField(null=True, blank=True)
-    
+    comentario = models.TextField(blank=True)
+    fecha_eleccion = models.DateTimeField()
+    terminado = models.BooleanField(default=False)
+    def __str__(self):
+        return f"{self.cliente.user.username} eligió {self.cantidad} de {self.articulo.nombre}"
+
 class Finanzas(models.Model):
     gastos=models.IntegerField()
     ganancias=models.IntegerField()

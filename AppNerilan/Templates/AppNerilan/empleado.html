@@ -10,11 +10,31 @@
     {% extends "AppNerilan/padre.html" %}
     {% load static %}
     {% block contenidoQueCambia %}
-    <h1>"Seccion de Empleados"</h1>
-    {% for e in empleados %}
-    <li>{{e.nombre}}</li>
-    {% endfor %}
+    <h1>"Sección de Empleados"</h1>
+    {% if empleados %}
+        {% for empleado in empleados %}
+        <div class="empleado">
+            <h2>{{ empleado.nombre }}</h2>
+            <p>{{ empleado.email }}</p>
+            <p>{{ empleado.antiguedadMeses }}</p>
+            {% if request.user.is_staff or empleado.user == request.user %}
+                {% if empleado.recibo %}
+                <a href="{{ empleado.recibo.url }}" target="_blank">Descargar recibo</a>
+                {% else %}
+                <p>No se ha subido recibo aún.</p>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No se encontraron empleados.</p>
+    {% endif %}
+    {% if not request.user.is_staff and not empleados %}
+        <p>Aún no se ha registrado tu información como empleado.</p>
+    {% endif %}
+    {% if request.user.is_staff %}
+        <a href="{% url 'subirnuevorecibo' %}">Subir nuevo recibo</a>
+    {% endif %}
     {% endblock %}
-      
 </body>
 </html>
