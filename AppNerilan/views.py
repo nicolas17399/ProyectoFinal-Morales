@@ -373,3 +373,8 @@ def vista_opcion2(request):
             </table>
             <input type="submit" value="Enviar">
         </form>"""
+
+from django.contrib.auth.models import Group
+
+nuevo_grupo, creado = Group.objects.get_or_create(name='Client')
+nuevo_grupo, creado = Group.objects.get_or_create(name='Employee')
